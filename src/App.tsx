@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import words from './words-de';
 
@@ -7,7 +6,7 @@ function App() {
   const [used, setUsed] = React.useState(new Set())
   const [index, setIndex] = React.useState(Math.floor(Math.random() * words.length))
 
-  const randomize = () => {
+  const randomize = React.useCallback(() => {
     const newUsed = new Set(used.add(index))
     setUsed(newUsed)
 
@@ -16,18 +15,18 @@ function App() {
       newIndex = Math.floor(Math.random() * words.length)
     }
     setIndex(newIndex)
-  }
+  }, [index, used])
 
   const onKeyDown = React.useCallback((e: React.KeyboardEvent) => {
-    if(e.keyCode == 32) {
+    if(e.keyCode === 32) {
       randomize()
     }
-  }, [])
+  }, [randomize])
 
   React.useEffect(() => {
     window.addEventListener('keydown', onKeyDown as any)
     return () => window.removeEventListener('keydown', onKeyDown as any)
-  }, [])
+  }, [onKeyDown])
 
   const gameOver = React.useMemo(() => {
     return used.size === words.length
